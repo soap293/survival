@@ -2,37 +2,34 @@
 
 ## Overview
 
-This notebook is designed to manage and update active/inactive shop lists for a daily survival analysis. It processes shop data from a specified date range, identifies active and inactive shops based on their activity, and saves the results into CSV files.
+This notebook is designed to generate and update active/inactive shop lists for daily survival analysis. It processes shop data from a specified date range, identifies active and inactive shops based on their activity, and saves the results into CSV files.
 
 ---
 
 ## Features
 
-1. **Active/Inactive Table Generation**:
+1. **Create Active/Inactive Tables**:
    - Fetches shop data within a given date range.
-   - Concatenates the data and calculates active and inactive shop lists based on the last activity date.
+   - Concatenates the data and generates active and inactive shop tables.
 
-2. **Incremental Updates**:
-   - Updates the active/inactive shop lists day by day until a target date.
-   - Merges new data with existing records and recalculates the shop statuses.
-
-3. **Parallel Processing**:
-   - Uses multithreading to process multiple files and folders in parallel for faster execution.
+2. **Update to Target Date**:
+   - Updates the active/inactive shop lists incrementally, day by day, until a specified target date.
 
 ---
 
 ## Functions
 
-### 1. `deep_find_files(file_format, directory, *keywords)`
+1. `deep_find_files(file_format: str, directory: str, *keywords: str) -> List[str]`
 - Recursively searches for files with a specific format (e.g., `.csv`) in a directory and its subdirectories.
 - Filters files based on optional keywords.
 
-### 2. `concat_folder(folder_path, max_workers=4)`
+2. `concat_folder(folder_path: str, keywords: List[str], max_workers: int = 8) -> pd.DataFrame`
 - Reads all CSV files in a folder (and subfolders) in parallel.
-- Returns a concatenated DataFrame of all the data.
+- Adds a `scrape_batch_date` column extracted from the folder name.
+- Returns a concatenated DataFrame.
 
-### 3. `update_survival_dfs(base_folder, start_date, end_date, max_workers=8, active_file, inactive_file)`
-- Updates the active and inactive shop lists:
+3. `update_survival_dfs(base_folder: str, start_date: str, end_date: str, keywords: List[str], max_workers: int = 8, active_file: str, inactive_file: str) -> Tuple[pd.DataFrame, pd.DataFrame]`
+- Updates active/inactive shop lists:
   - Reads existing active/inactive CSV files if available.
   - Processes new shop data from the specified date range.
   - Merges new data with existing records.
@@ -50,6 +47,7 @@ active, inactive = update_survival_dfs(
     base_folder="data/survive_test_data",
     start_date="2024-01-01",
     end_date="2024-12-31",
+    keywords=[],
     max_workers=8,
     active_file="active_shops.csv",
     inactive_file="inactive_shops.csv"
@@ -63,6 +61,7 @@ active, inactive = update_survival_dfs(
     base_folder="data/survive_test_data",
     start_date="2025-01-01",
     end_date="2025-01-01",
+    keywords=[],
     max_workers=8,
     active_file="active_shops.csv",
     inactive_file="inactive_shops.csv"
@@ -93,6 +92,7 @@ active, inactive = update_survival_dfs(
   - `traceback`
   - `concurrent.futures`
   - `tqdm`
+  - `pathlib`
 
 ---
 
